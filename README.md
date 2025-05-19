@@ -2,7 +2,8 @@
 ## 1. Lower/Upper Bound e Busca Binária
 **O que faz:**
 Busca binária (e funções `lower_bound`/`upper_bound`) localiza posições em um array ordenado
-o O(log n).
+o O(log n). O `upper_bound` retorna um ponteiro no elemento maior ou igual a `x`, enquanto o `upper_bound` retorna o estritamente maior.
+
 **Quando usar (Tipo de problema):**
 - Busca de valor específico: encontrar se um elemento existe.
 - Busca de primeiro elemento ≥/≤ valor: determinar limites inferior e superior.
@@ -11,25 +12,55 @@ o O(log n).
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-// Verifica se x existe em vetor ordenado a usando busca binária clássica
-bool exists(const vector<int>& a, int x) {
-  int l = 0, r = a.size() - 1; // limites inicial e final
-  while (l <= r) { // enquanto houver espaço
-    int m = l + (r - l) / 2; // ponto médio (evita overflow)
-    if (a[m] == x) // elemento encontrado
-      return true;
-    if (a[m] < x) // buscar na metade direita
-      l = m + 1;
-    else // buscar na metade esquerda
-      r = m - 1;
-  }
-  return false; // não encontrado
+
+// Função que verifica se é possível reduzir todos os fragmentos maiores que 'valor'
+// usando no máximo 'maxOperacoes' operações, considerando os fragmentos até o meio da lista
+bool ok(int valor, vector<int> listaFragmentos, int maxOperacoes, int tamanho) {
+    int operacoes = 0;
+    int meio = tamanho / 2;
+
+    // Itera da metade para o início, verificando fragmentos maiores que 'valor'
+    for (int i = meio; i >= 0 && listaFragmentos[i] > valor; i--) {
+        // Calcula quantas operações são necessárias para reduzir o fragmento ao valor desejado
+        operacoes += listaFragmentos[i] - valor;
+
+        // Se exceder o limite máximo de operações, retorna falso imediatamente
+        if (operacoes > maxOperacoes) {
+            return false;
+        }
+    }
+    // Se não ultrapassar o limite, é possível com 'valor' e retorna verdadeiro
+    return true;
 }
 
 int main() {
-vector<int> v = {1,3,5,7,9};
-cout << (exists(v, 7) ? "Encontrado" : "Não encontrado");
+    int quantidadeFragmentos, maxOperacoes;
+    cin >> quantidadeFragmentos >> maxOperacoes;
+
+    vector<int> listaFragmentos(quantidadeFragmentos);
+    for (int i = 0; i < quantidadeFragmentos; i++) {
+        cin >> listaFragmentos[i];
+    }
+
+    sort(listaFragmentos.begin(), listaFragmentos.end());
+
+    int max = listaFragmentos[quantidadeFragmentos / 2];
+    int min = listaFragmentos[quantidadeFragmentos / 2] - maxOperacoes;
+    int best = max;  // Guarda a melhor solução encontrada
+
+    while (max > min) {
+        int meio = min + (max - min) / 2;
+        if (ok(meio, listaFragmentos, maxOperacoes, quantidadeFragmentos)) {
+            best = meio;
+            max = meio;
+        }
+        else {
+            min = meio + 1;
+        }
+    }
+    cout << best << endl;
 }
+
 ```
 ---
 ## 2. Sliding Window
@@ -42,19 +73,27 @@ Mantém uma janela de limites móveis para processar subarrays/ substrings cont�
 ```cpp
 // Retorna o tamanho máximo de subarray cuja soma é ≤ K
 int maxSubarrayAtMostK(const vector<int>& a, int K) {
-  int sum = 0;
-  int l = 0;
-  int best = 0;
+  int sum = 0;       // Soma atual da janela (subarray)
+  int l = 0;         // Índice do início da janela (esquerda)
+  int best = 0;      // Melhor tamanho encontrado até agora
+
+  // Percorre o vetor com o índice da direita da janela
   for (int r = 0; r < a.size(); ++r) {
-    sum += a[r];
+    sum += a[r];     // Adiciona o elemento da direita na soma da janela
+
+    // Ajusta a janela para garantir que a soma ≤ K
     while (sum > K) {
-      sum -= a[l];
-      l++;
+      sum -= a[l];   // Remove o elemento mais à esquerda da janela
+      l++;           // Move o início da janela para a direita
     }
+
+    // Atualiza o maior tamanho válido encontrado
     best = max(best, r - l + 1);
   }
-  return best;
+  
+  return best;       // Retorna o tamanho máximo da subarray com soma ≤ K
 }
+
 ```
 ---
 ## 3. Two Pointers
@@ -66,24 +105,29 @@ Usa dois índices para varrer um array (geralmente ordenado) em tempo linear.
 - Intersecção/união de arrays ordenados.
 **Exemplo de código (C++):**
 ```cpp
-// Retorna todos pares (a[l], a[r]) cuja soma é X
+// Retorna todos os pares (a[l], a[r]) cuja soma é igual a X
 vector<pair<int,int>> pairsWithSum(const vector<int>& a, int X) {
-vector<pair<int,int>> res;
-int l = 0, r = a.size() - 1;
-while (l < r) {
-int s = a[l] + a[r];
-if (s == X) {
-res.emplace_back(a[l], a[r]);
-l++;
-r--;
+    vector<pair<int,int>> res;       // vetor para armazenar os pares encontrados
+    int l = 0;                       // ponteiro esquerdo no início do vetor
+    int r = (int)a.size() - 1;       // ponteiro direito no final do vetor
+
+    while (l < r) {                  // enquanto os ponteiros não se cruzarem
+        int s = a[l] + a[r];         // soma dos elementos apontados
+
+        if (s == X) {                // se a soma é igual a X
+            res.emplace_back(a[l], a[r]); // adiciona o par ao resultado
+            l++;                    // move ponteiro esquerdo para frente
+            r--;                    // move ponteiro direito para trás
+        }
+        else if (s < X)              // se a soma é menor que X
+            l++;                    // aumenta soma movendo ponteiro esquerdo para frente
+        else                        // se a soma é maior que X
+            r--;                    // diminui soma movendo ponteiro direito para trás
+    }
+
+    return res;                     // retorna todos os pares encontrados
 }
-else if (s < X)
-l++;
-else
-r--;
-}
-return res;
-}
+
 ```
 ---
 ## 4. Prefix Sum
@@ -211,11 +255,188 @@ int knap(int W, const vector<int>& w, const vector<int>& v) {
     return dp[n][W];
 }
 ```
+
+# Grafos e Caminhos Mínimos
+
 ---
 
-## Módulo Avançado B
+## 10. Representação de Grafos
 
-### 10. Teoria dos Números
+| Tipo                 | Quando Usar                                  | Vantagens                       | Desvantagens                  |
+|----------------------|---------------------------------------------|--------------------------------|------------------------------|
+| **Lista de Adjacência** | Grafos esparsos (arestas ~ vértices)       | Memória O(V + E), fácil iteração| Busca de aresta O(V)          |
+| **Matriz de Adjacência**| Grafos densos ou pequenos (ex: grafos completos) | Busca de aresta O(1), simples | Memória O(V²), lenta em grafos esparsos |
+
+**Exemplo (C++):**
+
+```cpp
+// Lista de adjacência
+int n;
+vector<vector<int>> g(n);
+g[u].push_back(v); // adiciona aresta u->v
+
+// Matriz de adjacência
+vector<vector<int>> M(n, vector<int>(n, 0));
+M[u][v] = 1;       // define aresta u->v
+```
+
+11. DFS (Busca em Profundidade)
+
+Usos Comuns:
+
+    Encontrar componentes conexas
+
+    Detectar ciclos
+
+    Ordenação topológica
+
+Pré-requisitos: vetor visited, recursão ou pilha.
+
+Código (C++):
+```cpp
+void dfs(int u) {
+    vis[u] = true;
+    for (int v : g[u])
+        if (!vis[v])
+            dfs(v);
+}
+
+int componentes = 0;
+for (int i = 0; i < n; i++) {
+    if (!vis[i]) {
+        dfs(i);
+        componentes++;
+    }
+}
+
+```
+Detecção de ciclo em grafo dirigido:
+
+``` cpp
+enum Estado { BRANCO, CINZA, PRETO };
+vector<Estado> estado(n, BRANCO);
+bool ciclo = false;
+
+void dfsCiclo(int u) {
+    estado[u] = CINZA;
+    for (int v : g[u]) {
+        if (estado[v] == CINZA) ciclo = true;
+        else if (estado[v] == BRANCO) dfsCiclo(v);
+    }
+    estado[u] = PRETO;
+}
+```
+
+8. BFS (Busca em Largura)
+
+Usos Comuns:
+
+    Caminho mínimo em grafo não ponderado
+
+    Verificar distância entre vértices
+
+    Testar bipartição do grafo
+
+Pré-requisitos: fila, vetor de distâncias, vetor de predecessores.
+
+Código (C++):
+``` cpp
+vector<int> dist(n, -1);
+queue<int> q;
+
+dist[src] = 0;
+q.push(src);
+
+while (!q.empty()) {
+    int u = q.front(); q.pop();
+    for (int v : g[u]) {
+        if (dist[v] == -1) {
+            dist[v] = dist[u] + 1;
+            q.push(v);
+        }
+    }
+}
+```
+Teste de bipartição:
+
+    Colorir vértices em duas cores alternadamente durante BFS.
+
+    Se encontrar aresta ligando vértices da mesma cor, grafo não é bipartido.
+
+9. Dijkstra
+
+Para que serve:
+Caminho mínimo em grafos com pesos positivos.
+
+Aplicações:
+
+    GPS e roteamento
+
+    Redes de estradas
+
+Pré-requisitos:
+Lista de adjacência com pesos, heap de prioridade.
+
+Código (C++):
+``` cpp
+using P = pair<long long,int>;
+vector<long long> dist(n, LLONG_MAX);
+priority_queue<P, vector<P>, greater<P>> pq;
+
+dist[src] = 0;
+pq.emplace(0, src);
+
+while (!pq.empty()) {
+    auto [d, u] = pq.top(); pq.pop();
+    if (d != dist[u]) continue;
+    for (auto [v, w] : g[u]) {
+        if (dist[u] + w < dist[v]) {
+            dist[v] = dist[u] + w;
+            pq.emplace(dist[v], v);
+        }
+    }
+}
+```
+10. Bellman-Ford
+
+Para que serve:
+Caminho mínimo com pesos negativos e detecção de ciclos negativos.
+
+Aplicações:
+
+    Mercado financeiro (arbitragem)
+
+    Sistemas com restrições temporais negativas
+
+Pré-requisitos:
+Lista de arestas, vetor de distâncias.
+
+Código (C++):
+``` cpp
+const long long INF = 4e18;
+vector<long long> dist(n, INF);
+dist[src] = 0;
+
+for (int i = 1; i < n; i++) {
+    for (auto [u, v, w] : edges) {
+        if (dist[u] + w < dist[v])
+            dist[v] = dist[u] + w;
+    }
+}
+
+// Detecção de ciclo negativo
+bool cicloNegativo = false;
+for (auto [u, v, w] : edges) {
+    if (dist[u] + w < dist[v])
+        cicloNegativo = true;
+}
+
+```
+---
+
+# Módulo Avançado B
+
+## 11. Teoria dos Números
 
 **O que faz**  
 - Primalidade  
@@ -264,7 +485,8 @@ int extgcd(int a, int b, int &x, int &y) {
     y = x1 - (a / b) * y1;
     return g;
 }
-11. LIS e DP Bitmask
+```
+## 12. LIS e DP Bitmask
 
 O que faz
 
@@ -279,7 +501,7 @@ Quando usar (Tipos de problema)
     DP Bitmask: TSP, cobertura de conjuntos, atribuição de tarefas.
 
 Exemplo de código (C++)
-
+``` cpp
 vector<int> lis(const vector<int>& a) {
     vector<int> d;  // d[k] = menor término de subseq. de comprimento k+1
     for (int x : a) {
@@ -291,8 +513,9 @@ vector<int> lis(const vector<int>& a) {
     }
     return d;
 }
+```
 
-12. Árvores, DP em Árvore e Toposort
+## 13. Árvores, DP em Árvore e Toposort
 
 O que faz
 
@@ -309,7 +532,7 @@ Quando usar (Tipos de problema)
     Compilação de módulos com dependências
 
 Exemplo de código (C++)
-
+``` cpp
 vector<int> order;
 vector<bool> vis;
 vector<vector<int>> adj;
@@ -325,8 +548,8 @@ void dfs(int u) {
 }
 
 // Após chamadas a dfs em todos os nós, basta inverter 'order'.
-
-13. DSU (Union-Find) e MST
+```
+## 14. DSU (Union-Find) e MST
 
 O que faz
 
@@ -341,7 +564,7 @@ Quando usar (Tipos de problema)
     Construção de redes de custo mínimo
 
 Exemplo de código (C++)
-
+``` cpp
 struct DSU {
     vector<int> parent, rank;
     DSU(int n): parent(n, -1), rank(n, 0) {}
@@ -360,8 +583,8 @@ struct DSU {
         return true;
     }
 };
-
-14. Segment Tree
+```
+## 15. Segment Tree
 
 O que faz
 Suporta consultas (ex.: minimum, sum) e atualizações em intervalos em O(log n), com lazy propagation.
@@ -373,7 +596,7 @@ Quando usar (Tipos de problema)
     Atualizações em massa sobre intervalos
 
 Exemplo de código (C++)
-
+``` cpp
 struct SegTree {
     int n;
     vector<int> st;
@@ -400,8 +623,8 @@ struct SegTree {
         );
     }
 };
-
-15. Binary Lifting, LCA e Sparse Table
+``` 
+## 16. Binary Lifting, LCA e Sparse Table
 
 O que faz
 
@@ -418,7 +641,7 @@ Quando usar (Tipos de problema)
     Consultas offline sobre intervalos
 
 Exemplo de código (C++)
-
+``` cpp
 const int LOG = 20;
 vector<int> depth;
 int up[N][LOG];
@@ -454,8 +677,8 @@ int lca(int a, int b) {
     }
     return up[a][0];
 }
-
-16. Strings Avançadas (Rolling Hash & KMP)
+```
+## 17. Strings Avançadas (Rolling Hash & KMP)
 
 O que faz
 
@@ -470,7 +693,7 @@ Quando usar (Tipos de problema)
     Detecção de padrões, ciclos em strings
 
 Exemplo de código (C++)
-
+``` cpp
 using ll = long long;
 const ll B = 137, M = 1000000007;
 vector<ll> h, p;
@@ -523,3 +746,4 @@ vector<int> kmpSearch(const string& txt, const string& pat) {
     }
     return res;
 }
+``` 
