@@ -678,27 +678,21 @@ int lca(int a, int b) {
     return up[a][0];
 }
 ```
-## 17. Strings Avançadas (Rolling Hash & KMP)
+## 17. Rolling Hash
 
-O que faz
+O que faz:
+Gera hashes de prefixos para substrings, permitindo comparar substrings rapidamente.
 
-    Rolling Hash: gera hashes de prefixos para comparações de substrings.
+Quando usar:
+Comparação rápida de substrings, LCS de strings, detecção de colisões.
 
-    KMP: busca padrão em texto em O(n + m).
-
-Quando usar (Tipos de problema)
-
-    Comparação rápida de substrings (LCS de strings)
-
-    Detecção de padrões, ciclos em strings
-
-Exemplo de código (C++)
-``` cpp
+Código C++:
+```cpp
 using ll = long long;
 const ll B = 137, M = 1000000007;
 vector<ll> h, p;
 
-// Inicializa hash e potências
+// Inicializa os vetores de hash e potências
 void init(const string& s) {
     int n = s.size();
     h.assign(n + 1, 0);
@@ -709,12 +703,22 @@ void init(const string& s) {
     }
 }
 
-// Retorna hash de substring [l, r)
+// Retorna o hash da substring [l, r)
 ll getHash(int l, int r) {
     return (h[r] - h[l] * p[r - l] % M + M) % M;
 }
+```
+## 18. KMP (Knuth-Morris-Pratt)
 
-// Constrói array LPS para KMP
+O que faz:
+Busca padrão em texto em O(n + m), evitando reprocessar caracteres.
+
+Quando usar:
+Contar ocorrências, encontrar padrões, detectar ciclos em strings.
+
+Código C++:
+```cpp
+// Constrói array LPS (Longest Prefix Suffix)
 vector<int> buildLPS(const string& pat) {
     int n = pat.size();
     vector<int> lps(n, 0);
@@ -730,7 +734,7 @@ vector<int> buildLPS(const string& pat) {
     return lps;
 }
 
-// Busca todas as ocorrências de pat em txt
+// Busca todas as ocorrências de 'pat' em 'txt'
 vector<int> kmpSearch(const string& txt, const string& pat) {
     vector<int> lps = buildLPS(pat), res;
     for (int i = 0, j = 0; i < txt.size(); ) {
@@ -746,4 +750,4 @@ vector<int> kmpSearch(const string& txt, const string& pat) {
     }
     return res;
 }
-``` 
+``
