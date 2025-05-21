@@ -192,13 +192,28 @@ Representa subconjuntos como bits de um inteiro, iterando em 0..2n−1.
 - Programação dinâmica sobre subconjuntos.
 **Exemplo de código (C++):**
 ```cpp
-int n = 4;
+int n = 4; 
+// Número de elementos no conjunto original (0, 1, 2, 3)
+
 for (int mask = 0; mask < (1 << n); ++mask) {
-  vector<int> subset;
-  for (int i = 0; i < n; ++i) {
-    if (mask & (1 << i))
-    subset.push_back(i);
-  }
+    // Percorre todas as possíveis máscaras de bits de tamanho n
+    // (1 << n) é 2^n — o número total de subconjuntos possíveis
+
+    vector<int> subset;
+    // Vetor para armazenar o subconjunto correspondente à máscara atual
+
+    for (int i = 0; i < n; ++i) {
+        // Para cada bit da máscara (de 0 a n-1)
+
+        if (mask & (1 << i))
+            // Verifica se o i-ésimo bit está ligado (1) na máscara atual
+            // Se estiver, significa que o elemento i faz parte do subconjunto
+
+            subset.push_back(i);
+            // Adiciona o elemento i ao subconjunto
+    }
+
+    // Aqui você poderia, por exemplo, imprimir ou processar o subset
 }
 ```
 ---
@@ -231,29 +246,40 @@ Armazena resultados de subproblemas para evitar recomputação.
 
 **Exemplo de código (C++)**  
 ```cpp
+// Função que resolve o problema da Mochila 0/1
+// W é a capacidade máxima da mochila
+// w é o vetor com os pesos dos itens
+// v é o vetor com os valores dos itens
 int knap(int W, const vector<int>& w, const vector<int>& v) {
-    int n = w.size();
-    // dp[i][j] = melhor valor usando itens [0..i-1] com capacidade j
+    int n = w.size(); // Número de itens
+
+    // Cria a matriz dp com (n+1) linhas e (W+1) colunas, inicializada com zero
+    // dp[i][j] representa o maior valor possível usando os primeiros i itens com capacidade j
     vector<vector<int>> dp(n + 1, vector<int>(W + 1, 0));
 
-    for (int i = 1; i <= n; ++i) {
-        for (int j = 0; j <= W; ++j) {
-            // opção 1: não pegar o item i-1
+    // Preenche a matriz dp
+    for (int i = 1; i <= n; ++i) { // Para cada item (1 até n)
+        for (int j = 0; j <= W; ++j) { // Para cada capacidade de mochila (0 até W)
+            
+            // Caso não pegue o item i-1
             int sem_item = dp[i - 1][j];
 
-            // opção 2: pegar o item i-1 (se couber no peso j)
+            // Caso pegue o item i-1 (só se couber na mochila)
             int com_item = 0;
             if (j >= w[i - 1]) {
+                // Soma o valor do item i-1 com o melhor valor para a capacidade restante
                 com_item = dp[i - 1][j - w[i - 1]] + v[i - 1];
             }
 
-            // escolhe a melhor das duas opções
+            // Armazena o melhor valor entre pegar ou não o item
             dp[i][j] = max(sem_item, com_item);
         }
     }
 
+    // Retorna o melhor valor possível com todos os itens e capacidade total W
     return dp[n][W];
 }
+
 ```
 
 # Grafos e Caminhos Mínimos
@@ -438,26 +464,22 @@ for (auto [u, v, w] : edges) {
 
 ## 11. Teoria dos Números
 
-**O que faz**  
-- Primalidade  
-- Cálculo de GCD/LCM  
-- Inverso modular  
-- Resolução de equações diofantinas
+## Algoritmos Úteis de Teoria dos Números
 
-**Quando usar (Tipos de problema)**  
-- Criba de Eratóstenes para gerar primos  
-- Simplificação de frações com GCD/LCM  
-- Criptografia e congruências com inverso modular  
-- Solução de equações diofantinas lineares
+### 1. Máximo Divisor Comum (GCD) - Algoritmo de Euclides
 
-**Exemplo de código (C++)**  
 ```cpp
-// GCD via algoritmo de Euclides
 int gcd(int a, int b) {
     return b ? gcd(b, a % b) : a;
 }
+```
+**Uso:** Calcula o maior número que divide `a` e `b` sem deixar resto. Muito usado para simplificar frações, calcular o mínimo múltiplo comum (MMC), e resolver problemas de divisibilidade.
 
-// Exponenciação rápida para modPow
+---
+
+### 2. Exponenciação Modular Rápida
+
+```cpp
 int modPow(int base, int exp, int m) {
     long long result = 1, b = base;
     while (exp > 0) {
@@ -467,13 +489,25 @@ int modPow(int base, int exp, int m) {
     }
     return result;
 }
+```
+**Uso:** Calcula `(base^exp) % m` de forma eficiente em O(log exp). Fundamental em criptografia (RSA), hashing e aritmética modular em geral.
 
-// Inverso modular usando Fermat (m primo)
+---
+
+### 3. Inverso Modular (Fermat)
+
+```cpp
 int modinv(int a, int m) {
     return modPow(a, m - 2, m);
 }
+```
+**Uso:** Calcula o inverso de `a` módulo `m`, ou seja, o número `x` tal que `a * x ≡ 1 (mod m)`. Só funciona se `m` é primo (baseado no pequeno teorema de Fermat).
 
-// Extenso algoritmo de Euclides para ax + by = gcd(a,b)
+---
+
+### 4. Algoritmo Estendido de Euclides
+
+```cpp
 int extgcd(int a, int b, int &x, int &y) {
     if (b == 0) {
         x = 1; y = 0;
@@ -486,6 +520,140 @@ int extgcd(int a, int b, int &x, int &y) {
     return g;
 }
 ```
+**Uso:** Encontra inteiros `x` e `y` que satisfazem `ax + by = gcd(a, b)`. Útil para resolver equações diofantinas e obter inversos modulares quando `m` não é primo.
+
+---
+
+### 5. Crivo de Eratóstenes
+
+```cpp
+vector<bool> is_prime(N+1, true);
+is_prime[0] = is_prime[1] = false;
+for (int i = 2; i * i <= N; i++) {
+    if (is_prime[i]) {
+        for (int j = i * i; j <= N; j += i)
+            is_prime[j] = false;
+    }
+}
+```
+**Uso:** Pré-processa todos os números primos até `N`. Rápido e eficiente (O(N log log N)). Base para problemas de contagem e fatoração.
+
+---
+
+### 6. Fatoração de um número
+
+```cpp
+vector<int> fatorar(int n) {
+    vector<int> fatores;
+    for (int i = 2; i * i <= n; i++) {
+        while (n % i == 0) {
+            fatores.push_back(i);
+            n /= i;
+        }
+    }
+    if (n > 1) fatores.push_back(n);
+    return fatores;
+}
+```
+**Uso:** Decompõe um número em seus fatores primos. Útil em problemas que exigem análise da estrutura multiplicativa de um número.
+
+---
+
+### 7. Função Totiente de Euler (φ)
+
+```cpp
+int phi(int n) {
+    int res = n;
+    for (int i = 2; i * i <= n; i++) {
+        if (n % i == 0) {
+            while (n % i == 0) n /= i;
+            res -= res / i;
+        }
+    }
+    if (n > 1) res -= res / n;
+    return res;
+}
+```
+**Uso:** Conta quantos inteiros positivos menores que `n` são coprimos com `n`. Essencial em problemas envolvendo ciclos, ordens e exponenciação modular.
+
+---
+
+### 8. Sieve de φ(n)
+
+```cpp
+vector<int> phi(N+1);
+for (int i = 0; i <= N; i++) phi[i] = i;
+for (int i = 2; i <= N; i++) {
+    if (phi[i] == i) {
+        for (int j = i; j <= N; j += i)
+            phi[j] -= phi[j] / i;
+    }
+}
+```
+**Uso:** Pré-calcula o valor de φ(n) para todos `n` até `N`. Muito eficiente para resolver múltiplas queries relacionadas a coprimos.
+
+---
+
+### 9. Contagem e Soma dos Divisores
+
+```cpp
+pair<int, int> contarSomaDivisores(int n) {
+    int qtd = 1, soma = 1;
+    for (int i = 2; i * i <= n; i++) {
+        int pot = 0, powsoma = 1, base = 1;
+        while (n % i == 0) {
+            pot++;
+            n /= i;
+            base *= i;
+            powsoma += base;
+        }
+        qtd *= (pot + 1);
+        soma *= powsoma;
+    }
+    if (n > 1) {
+        qtd *= 2;
+        soma *= (1 + n);
+    }
+    return {qtd, soma};
+}
+```
+**Uso:** Retorna o número total de divisores e a soma dos divisores de `n`. Útil em teoria multiplicativa e problemas de otimização.
+
+---
+
+### 10. Resolver ax ≡ b (mod m)
+
+```cpp
+int solve_congruence(int a, int b, int m) {
+    int x, y;
+    int g = extgcd(a, m, x, y);
+    if (b % g != 0) return -1;
+    x = (x * (b / g)) % m;
+    return (x + m) % m;
+}
+```
+**Uso:** Resolve congruência linear. Retorna uma solução `x` de `ax ≡ b (mod m)`, se existir. Usa o algoritmo estendido de Euclides.
+
+---
+
+### 11. Teorema Chinês do Resto (CRT) para 2 módulos
+
+```cpp
+long long CRT(long long a1, long long m1, long long a2, long long m2) {
+    long long x1, y1;
+    long long g = extgcd(m1, m2, x1, y1);
+    if ((a2 - a1) % g != 0) return -1;
+    long long mod = m1 * m2;
+    long long res = (a1 + m1 * ((x1 * ((a2 - a1) / g)) % m2)) % mod;
+    return (res + mod) % mod;
+}
+```
+**Uso:** Resolve sistemas de duas congruências com módulos coprimos. Muito útil para reconstrução de restos e aplicações em criptografia.
+
+---
+
+Esses algoritmos formam uma **base sólida de teoria dos números** para programação competitiva e resolução de problemas matemáticos avançados.
+
 ## 12. LIS e DP Bitmask
 
 O que faz
@@ -681,7 +849,8 @@ int lca(int a, int b) {
 ## 17. Rolling Hash
 
 O que faz:
-Gera hashes de prefixos para substrings, permitindo comparar substrings rapidamente.
+Rolling Hash (ou hash deslizante) é uma técnica para comparar substrings de forma rápida, transformando uma string (ou substring) em um número inteiro (hash). Isso permite verificar se duas substrings são iguais sem precisar comparar caractere por caractere.
+
 
 Quando usar:
 Comparação rápida de substrings, LCS de strings, detecção de colisões.
@@ -711,7 +880,7 @@ ll getHash(int l, int r) {
 ## 18. KMP (Knuth-Morris-Pratt)
 
 O que faz:
-Busca padrão em texto em O(n + m), evitando reprocessar caracteres.
+O KMP é um algoritmo eficiente para buscar todas as ocorrências de um padrão (string pat) dentro de um texto maior (string txt). Ele faz isso em tempo O(n + m).
 
 Quando usar:
 Contar ocorrências, encontrar padrões, detectar ciclos em strings.
@@ -750,4 +919,4 @@ vector<int> kmpSearch(const string& txt, const string& pat) {
     }
     return res;
 }
-``
+```
