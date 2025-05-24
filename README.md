@@ -1,3 +1,6 @@
+![image](https://github.com/user-attachments/assets/6852e7aa-5496-42b5-a85f-a5429f4c50eb)
+
+
 # Técnicas de Programação
 ## 1. Lower/Upper Bound e Busca Binária
 **O que faz:**
