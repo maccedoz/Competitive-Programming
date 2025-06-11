@@ -1,4 +1,199 @@
-![image](https://github.com/user-attachments/assets/6852e7aa-5496-42b5-a85f-a5429f4c50eb)
+<h1 align="center">BIBlLIOTECA PARA PROGRAMAÇÂO COMPETITIVA</h1>
+<h4 align="center"> Por Magno Macedo </h4>
+
+Essa é uma biblioteca em construção, as informações contidas aqui ainda não estão 100% prontas.
+
+# Limites de execução:
+
+- 12 <= O(n!)
+- 25 <= O(2^n)
+- 100 <= O(n^4)
+- 500 <= O(n^3)
+- 10^4 <= O(n^2)
+- 10^6 <= O(nlogn)
+- 10^8 <= O(n)
+- 10^8 > O(logn) ou O(1)
+  
+# Funções gerais do C++
+
+## 1. Manipulação de Strings
+- tolower(char c) / toupper(char c): Converte um caractere para minúsculo/maiúsculo.
+  
+char minuscula = tolower('A'); (resultado: 'a')
+
+- string::find(substring): Retorna a primeira posição de uma substring ou string::npos se não encontrada.
+  
+string s = "hello world"; size_t pos = s.find("world");
+
+- string::substr(pos, len): Extrai uma parte da string, começando em pos com len caracteres.
+  
+string s = "programming"; string sub = s.substr(3, 4); (resultado: "gram")
+
+- stoi(string s) / stoll(string s) / stod(string s): Converte string para int, long long ou double.
+  
+int num = stoi("123");
+
+- to_string(numeric_value): Converte um valor numérico para string.
+  
+string str_num = to_string(456);
+
+- getline(cin, string s): Lê uma linha inteira do cin (incluindo espaços).
+  
+string linha; getline(cin, linha);
+
+- reverse(s.begin(), s.end()): Inverte a ordem dos caracteres na string.
+
+string s = "hello"; reverse(s.begin(), s.end()); (resultado: "olleh")
+
+- sort(s.begin(), s.end()): Ordena os caracteres da string lexicograficamente.
+
+string s = "bac"; sort(s.begin(), s.end()); (resultado: "abc")
+
+### Verificação/Conversão de Case (Bitwise): Operações rápidas, sem chamadas de função.
+
+- bool is_digit = (c >= '0' && c <= '9');
+
+- char to_lower_bitwise(char c) { return c | ' '; }
+
+- bool is_lower_bitwise(char c) { return (c & ' ') == ' '; }
+
+## 2. Estruturas de Dados e Algoritmos Padrão (STL - C++)
+- sort(begin, end): Ordena um intervalo.
+
+vector<int> v = {5, 2, 8, 1}; sort(v.begin(), v.end()); (resultado: {1, 2, 5, 8})
+
+- min_element(begin, end) / max_element(begin, end): Retorna um iterador para o menor/maior elemento.
+
+int menor = *min_element(v.begin(), v.end());
+
+- accumulate(begin, end, initial_value): Soma elementos de um intervalo.
+
+int soma = accumulate(v.begin(), v.end(), 0);
+
+- count(begin, end, value): Conta ocorrências de um valor em um intervalo.
+
+int ocorrencias = count(v.begin(), v.end(), 5);
+
+- binary_search(begin, end, value): Verifica a existência de um valor em intervalo ordenado.
+
+bool encontrado = binary_search(v.begin(), v.end(), 7);
+
+- lower_bound(begin, end, value) / upper_bound(begin, end, value): Em intervalo ordenado, lower_bound aponta para o 1º elemento ≥ value; upper_bound aponta para o 1º elemento > value.
+
+auto it_lb = lower_bound(v.begin(), v.end(), 5);
+
+- unique(begin, end) + erase: Remove duplicatas consecutivas (após sort).
+
+v.erase(unique(v.begin(), v.end()), v.end());
+
+- next_permutation(begin, end) / prev_permutation(begin, end): Gera a próxima/anterior permutação lexicográfica.
+
+do { cout << s << endl; } while (next_permutation(s.begin(), s.end()));
+
+- iota(begin, end, value): Preenche um intervalo com valores sequenciais.
+
+vector<int> v(5); iota(v.begin(), v.end(), 10); (v será {10, 11, 12, 13, 14})
+
+- nth_element(begin, nth, end): Posiciona o k-ésimo menor elemento na sua posição correta (em O(N) médio).
+
+nth_element(v.begin(), v.begin() + 2, v.end());
+
+- max({a, b, c, ...}) / min({a, b, c, ...}): Retorna o maior/menor de múltiplos valores.
+
+int m = max({5, 8, 3, 12}); (resultado: 12)
+
+##3. Funções Matemáticas
+- abs(value) / fabs(value): Retorna o valor absoluto (int / double).
+
+int val_abs = abs(-10);
+
+- pow(base, exponent): Calcula potência (base 
+exponent
+ ).
+
+double res = pow(2, 3); (resultado: 8.0)
+
+- sqrt(value): Calcula raiz quadrada.
+
+double raiz = sqrt(25.0);
+
+- ceil(value) / floor(value) / round(value): Arredonda para cima, para baixo, ou para o inteiro mais próximo.
+
+ceil(3.14) é 4.0; floor(3.99) é 3.0; round(3.5) é 4.0.
+
+- gcd(a, b) (C++17) / __gcd(a, b) (GCC): Máximo Divisor Comum.
+
+int mdc = gcd(12, 18); (resultado: 6)
+
+- lcm(a, b) (C++17): Mínimo Múltiplo Comum.
+
+int mmc = lcm(4, 6); (resultado: 12)
+
+- partial_sum(begin, end, out_begin): Calcula somas prefixadas.
+
+vector<int> ps; partial_sum(v.begin(), v.end(), back_inserter(ps));
+
+- adjacent_difference(begin, end, out_begin): Calcula diferenças entre elementos adjacentes.
+
+vector<int> ad; adjacent_difference(v.begin(), v.end(), back_inserter(ad));
+
+- Soma/Multiplicação com Wraparound (Módulo): Evita overflow em operações modulares.
+
+long long sum_safe = (0LL + a + b) % MOD;
+
+bool is_mul_overflow(int a, int b) { return b != 0 && a > INT_MAX / b; }
+
+- pow_mod(base, exponent, mod): Exponenciação modular rápida (base 
+exponent
+ (modmod)).
+
+Função otimizada para long long pow_mod(long long a, long long b, long long mod) { ... }
+
+Teste de Primalidade Miller-Rabin: Verifica se número grande é primo (probabilístico).
+
+##4. Bit Manipulation (Para Otimização)
+- __builtin_popcount(x) / __builtin_popcountll(x): Conta bits '1'.
+
+int ones = __builtin_popcount(7); (resultado: 3)
+
+- __builtin_clz(x) / __builtin_clzll(x): Conta zeros à esquerda.
+
+Truque: ⌊log 2(x)⌋ é 31 - __builtin_clz(x) (para unsigned int).
+
+- __builtin_ctz(x): Conta zeros à direita.
+
+int tz = __builtin_ctz(8); (resultado: 3)
+
+- __builtin_parity(x): Retorna 1 se o número de bits '1' for ímpar, 0 se par.
+
+##5. Utilitários Diversos e Truques
+- memset(ptr, value, num): Preenche bloco de memória (use com 0 ou -1 para int arrays).
+
+memset(arr, 0, sizeof(arr));
+
+- fill(begin, end, value): Preenche um intervalo com qualquer valor.
+
+fill(v.begin(), v.end(), 7);
+
+- swap(a, b): Troca os valores de duas variáveis.
+
+int x = 5, y = 10; swap(x, y);
+
+- Inicialização vetor multidimensional: vector<vector<int>> dp(n, vector<int>(m, -1));
+
+Custom hash para unordered_map<pair<int, int>>: Permite usar pair como chave em unordered_map.
+
+Exemplo de struct pair_hash { ... } e uso com unordered_map<pair<int,int>, int, pair_hash>.
+
+##6. Debugging e Utilitários de Teste
+
+- Medição de Tempo (<chrono>): Mede tempo de execução.
+
+auto start = chrono::high_resolution_clock::now(); ... auto end = chrono::high_resolution_clock::now();
+
+##Dicas Adicionais
+
+- Otimização I/O: ios_base::sync_with_stdio(false); cin.tie(NULL); no main().
 
 
 # Técnicas de Programação
