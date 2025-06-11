@@ -102,7 +102,7 @@ nth_element(v.begin(), v.begin() + 2, v.end());
 
 int m = max({5, 8, 3, 12}); (resultado: 12)
 
-##3. Funções Matemáticas
+## 3. Funções Matemáticas
 - abs(value) / fabs(value): Retorna o valor absoluto (int / double).
 
 int val_abs = abs(-10);
@@ -151,7 +151,7 @@ Função otimizada para long long pow_mod(long long a, long long b, long long mo
 
 Teste de Primalidade Miller-Rabin: Verifica se número grande é primo (probabilístico).
 
-##4. Bit Manipulation (Para Otimização)
+## 4. Bit Manipulation (Para Otimização)
 - __builtin_popcount(x) / __builtin_popcountll(x): Conta bits '1'.
 
 int ones = __builtin_popcount(7); (resultado: 3)
@@ -166,7 +166,7 @@ int tz = __builtin_ctz(8); (resultado: 3)
 
 - __builtin_parity(x): Retorna 1 se o número de bits '1' for ímpar, 0 se par.
 
-##5. Utilitários Diversos e Truques
+## 5. Utilitários Diversos e Truques
 - memset(ptr, value, num): Preenche bloco de memória (use com 0 ou -1 para int arrays).
 
 memset(arr, 0, sizeof(arr));
@@ -185,13 +185,13 @@ Custom hash para unordered_map<pair<int, int>>: Permite usar pair como chave em 
 
 Exemplo de struct pair_hash { ... } e uso com unordered_map<pair<int,int>, int, pair_hash>.
 
-##6. Debugging e Utilitários de Teste
+## 6. Debugging e Utilitários de Teste
 
 - Medição de Tempo (<chrono>): Mede tempo de execução.
 
 auto start = chrono::high_resolution_clock::now(); ... auto end = chrono::high_resolution_clock::now();
 
-##Dicas Adicionais
+## Dicas Adicionais
 
 - Otimização I/O: ios_base::sync_with_stdio(false); cin.tie(NULL); no main().
 
